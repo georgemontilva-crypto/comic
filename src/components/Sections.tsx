@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { gsap, reduced, ScrollTrigger, scrollToEl, scrollToY } from '../lib/motion'
 import { sound } from '../lib/sound'
-import { characters, comic, issues } from '../data/comic'
+import { art, characters, comic, issues } from '../data/comic'
 import { Clock } from './Chrome'
 import { Portrait } from './Portraits'
 import { ShaderCanvas } from './ShaderCanvas'
 import { Static } from './Static'
 
 const css = (vars: Record<string, string | number>) => vars as CSSProperties
-const byId = (id: string) => characters.find((c) => c.id === id) ?? characters[0]
 
 /* ---------------------------------------------------------------- HERO */
 
@@ -36,7 +35,8 @@ export function Hero({ ready }: { ready: boolean }) {
 
   return (
     <section className="hero" id="top" ref={root}>
-      <ShaderCanvas className="hero__gl" />
+      <img className="hero__art" src={art.cover} alt="" aria-hidden="true" />
+      <ShaderCanvas className="hero__gl" image={art.cover} />
       <div className="hero__osd osd" data-hero>
         <span>
           <i className="rec" aria-hidden="true" /> Rec · CH {comic.channel}
@@ -253,7 +253,7 @@ export function Cast() {
         </header>
 
         <div className="cast__stage">
-          <div className="tv">
+          <div className={`tv ${ch.classified ? 'is-classified' : ''}`}>
             <div className="tv__screen">
               <Portrait key={ch.id} character={ch} className="tv__img" />
               <Static key={i} className="tv__static" />
@@ -304,54 +304,140 @@ export function Cast() {
   )
 }
 
-/* ------------------------------------------------------------ ADELANTO */
+/* ------------------------------------------------------------- PORTADA */
 
-export function Pages() {
+export function Cover() {
+  const frame = useRef<HTMLDivElement>(null)
+  const card = useRef<HTMLDivElement>(null)
+
+  // La portada se inclina: con el ratón en escritorio, con el scroll en táctil.
+  useEffect(() => {
+    const box = frame.current
+    const el = card.current
+    if (!box || !el || reduced) return
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const rx = gsap.quickTo(el, 'rotationX', { duration: 0.6, ease: 'power3' })
+      const ry = gsap.quickTo(el, 'rotationY', { duration: 0.6, ease: 'power3' })
+      const move = (e: PointerEvent) => {
+        const r = box.getBoundingClientRect()
+        const x = (e.clientX - r.left) / r.width - 0.5
+        const y = (e.clientY - r.top) / r.height - 0.5
+        ry(x * 18)
+        rx(-y * 13)
+        el.style.setProperty('--gx', `${(x + 0.5) * 100}%`)
+        el.style.setProperty('--gy', `${(y + 0.5) * 100}%`)
+      }
+      const leave = () => {
+        rx(0)
+        ry(0)
+      }
+      box.addEventListener('pointermove', move)
+      box.addEventListener('pointerleave', leave)
+      return () => {
+        box.removeEventListener('pointermove', move)
+        box.removeEventListener('pointerleave', leave)
+      }
+    }
+
+    const tween = gsap.fromTo(
+      el,
+      { rotationY: -16, rotationX: 7 },
+      {
+        rotationY: 16,
+        rotationX: -5,
+        ease: 'none',
+        scrollTrigger: { trigger: box, start: 'top bottom', end: 'bottom top', scrub: true },
+      },
+    )
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+  }, [])
+
+  const [a, b] = comic.title
+
   return (
-    <section className="section pages" id="adelanto">
+    <section className="section cover" id="portada">
       <header className="sec-head">
-        <span className="tag">03 / Adelanto</span>
+        <span className="tag">03 / Portada</span>
         <h2 className="h2" data-split>
-          Páginas que no deberías estar viendo
+          El número uno, de frente
         </h2>
       </header>
+
+      <div className="cover__stage">
+        <div className="cover__frame" ref={frame} data-cursor="#01">
+          <div className="cover__card" ref={card}>
+            <img
+              src={art.cover}
+              alt="Portada del número uno: cinco personajes miran hacia una ciudad flotante dentro de un anillo de luz"
+              width={1086}
+              height={1448}
+              loading="lazy"
+            />
+            <span className="cover__glare" aria-hidden="true" />
+            <span className="cover__logo" aria-hidden="true">
+              {a}
+              <b>{b}</b>
+            </span>
+            <span className="cover__num osd" aria-hidden="true">
+              #01
+            </span>
+          </div>
+        </div>
+
+        <div className="cover__info">
+          <p className="cover__text" data-reveal>
+            {comic.cover.text}
+          </p>
+          <dl className="cover__meta">
+            {comic.cover.meta.map(([k, v]) => (
+              <div key={k} data-reveal>
+                <dt className="osd">{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
 
       <div className="page-grid">
         <figure className="panel panel--a" data-panel>
           <div className="panel__art" data-parallax="6">
-            <Portrait character={byId('pastor')} />
+            <img src={art.city} alt="La ciudad flotante dentro del anillo de luz" loading="lazy" />
           </div>
-          <p className="caption">Canal 33. 3:33 a. m.</p>
-          <figcaption className="balloon balloon--br">Hermanos, la señal nos eligió.</figcaption>
+          <p className="caption">Sobre las ruinas. 3:33 a. m.</p>
+          <figcaption className="caption caption--end">La ciudad no baja.</figcaption>
         </figure>
 
         <figure className="panel panel--b" data-panel>
-          <span className="sfx">¡KRZZT!</span>
+          <span className="sfx">¡KRAKK!</span>
         </figure>
 
         <figure className="panel panel--c" data-panel>
           <div className="panel__art" data-parallax="8">
-            <Portrait character={byId('babas')} />
+            <img src={art.eyes} alt="Dos ojos encendidos bajo una capucha gigante" loading="lazy" />
           </div>
-          <figcaption className="balloon balloon--tl">*eructo*</figcaption>
+          <figcaption className="caption">Arriba, algo abre los ojos.</figcaption>
         </figure>
 
         <figure className="panel panel--d" data-panel>
           <div className="panel__art" data-parallax="8">
-            <Portrait character={byId('hueso')} />
+            <img src={art.sword} alt="Una espada oscura clavada entre los escombros" loading="lazy" />
           </div>
-          <figcaption className="balloon balloon--bl">Le falta el 33-B.</figcaption>
+          <figcaption className="caption">Una espada sin dueño.</figcaption>
         </figure>
 
         <figure className="panel panel--e" data-panel>
           <div className="panel__art" data-parallax="10">
-            <Portrait character={byId('greta')} />
+            <img src={art.gaze} alt="El protagonista mira hacia arriba" loading="lazy" />
           </div>
-          <p className="caption">Mientras tanto, alguien intenta apagar la tele…</p>
-          <figcaption className="balloon balloon--br">No estoy enojada. Estoy cargada.</figcaption>
+          <figcaption className="balloon balloon--br">Yo solo pasaba por aquí.</figcaption>
         </figure>
       </div>
-      <p className="pages__note osd">Página de muestra · arte provisional</p>
+      <p className="pages__note osd">Detalles de la portada · textos provisionales</p>
     </section>
   )
 }
@@ -383,7 +469,7 @@ export function Schedule() {
 
 /* --------------------------------------------------------------- FINAL */
 
-const bars = ['#f1eee4', '#c8ff1a', '#27e6ff', '#a66bff', '#ff2e7e', '#ff5a2b', '#ffb21a']
+const bars = ['#f1eee4', '#ff4fc3', '#9bd2ff', '#6a4dff', '#ff3048', '#f5b72e', '#6f86ff']
 
 export function Finale() {
   return (

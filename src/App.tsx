@@ -3,7 +3,7 @@ import { lockScroll, ScrollTrigger, setupMotion, setupScroll } from './lib/motio
 import { sound } from './lib/sound'
 import { comic } from './data/comic'
 import { Cursor, Fx, IdleBump, Nav, Preloader } from './components/Chrome'
-import { Bands, Bump, Cast, Finale, Hero, Pages, Schedule, Synopsis } from './components/Sections'
+import { Bands, Bump, Cast, Cover, Finale, Hero, Schedule, Synopsis } from './components/Sections'
 
 export default function App() {
   const main = useRef<HTMLElement>(null)
@@ -55,7 +55,7 @@ export default function App() {
         <Synopsis />
         <Cast />
         <Bump lines={comic.bumps[1]} />
-        <Pages />
+        <Cover />
         <Schedule />
         <Finale />
       </main>

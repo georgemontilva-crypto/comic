@@ -1,9 +1,11 @@
 // ------------------------------------------------------------------
 // TODO EL CONTENIDO DE LA WEB VIVE AQUÍ.
 // Cambia título, textos, personajes y números sin tocar los componentes.
-// Para usar arte real de un personaje: pon la imagen en /public/personajes/
-// y escribe su ruta en `image` (ej. image: './personajes/greta.webp').
-// Mientras `image` esté vacío se muestra el retrato provisional en SVG.
+//
+// Arte: las imágenes están en /public/arte/. Los retratos del elenco son
+// recortes de la portada; para usar arte propio de un personaje, pon el
+// archivo en /public/arte/ (vertical 4:5, WebP) y cambia su `image`.
+// Los nombres, textos y cifras son PROVISIONALES.
 // ------------------------------------------------------------------
 
 export type Stat = { label: string; value: number }
@@ -18,122 +20,147 @@ export type Character = {
   color: string
   stats: Stat[]
   image?: string
+  /** personaje aún no revelado: el canal solo muestra estática */
+  classified?: boolean
 }
 
 export type Issue = { n: string; time: string; title: string; status: string }
 
+export const art = {
+  cover: './arte/portada.webp',
+  city: './arte/d-ciudad.webp',
+  eyes: './arte/d-ojos.webp',
+  sword: './arte/d-espada.webp',
+  gaze: './arte/d-mirada.webp',
+}
+
 export const comic = {
   title: ['MALA', 'SEÑAL'] as const,
   channel: 33,
-  tagline: 'Un cómic para leer con la luz apagada y la tele encendida.',
-  lead: 'Seis desconocidos. Un canal que no aparece en ninguna guía. Cero horas de sueño.',
+  tagline: 'Una ciudad cuelga del cielo. Algo la está mirando.',
+  lead: 'Seis desconocidos, una espada sin dueño y una señal que nadie debería haber recibido.',
   synopsis:
-    'Cada noche, a las 3:33, un canal que no aparece en ninguna guía empieza a transmitir. Quien lo ve no vuelve a dormir. Seis desconocidos lo vieron. Ahora la señal los quiere de vuelta, y ellos solo quieren que alguien apague la tele.',
+    'Sobre las ruinas flota una ciudad que nadie recuerda haber construido. Cada noche, a las 3:33, se abre un anillo de luz y algo encapuchado mira hacia abajo. Seis desconocidos le sostuvieron la mirada. Ahora no pueden apartarla.',
   facts: [
-    { value: 6, label: 'inadaptados' },
-    { value: 1, label: 'canal maldito' },
-    { value: 0, label: 'horas de sueño' },
+    { value: 6, label: 'elegidos a la fuerza' },
+    { value: 1, label: 'ciudad colgada del cielo' },
+    { value: 0, label: 'formas de bajarla' },
   ],
-  marqueeA: ['NO AJUSTE SU TELEVISOR', 'EL PROBLEMA ERES TÚ', 'SEÑAL: MALA', 'ÁNIMO: PEOR'],
-  marqueeB: ['TRANSMITIENDO DESDE NINGUNA PARTE', '3:33 A. M.', 'NADIE ESTÁ AL MANDO', 'SIGA VIENDO'],
+  marqueeA: ['NO MIRES ARRIBA', 'LA CIUDAD NO BAJA', 'SEÑAL: MALA', 'ALGO TE MIRA'],
+  marqueeB: ['TRANSMITIENDO DESDE LAS RUINAS', '3:33 A. M.', 'NADIE ESTÁ AL MANDO', 'SIGA VIENDO'],
   bumps: [
-    ['son las 3:33 de la madrugada.', 'tu mamá cree que estás dormido.', 'nosotros sabemos que no.'],
-    ['este cómic no fue aprobado por nadie.', 'ni siquiera por sus autores.', 'gracias por su preferencia.'],
+    ['son las 3:33 de la madrugada.', 'la ciudad sigue flotando.', 'nadie sabe quién la sostiene.'],
+    ['lo de arriba abrió los ojos.', 'no te pongas nervioso.', 'ya te vio.'],
   ],
+  cover: {
+    meta: [
+      ['Número', '01'],
+      ['Estado', 'En producción'],
+      ['Formato', 'Por confirmar'],
+      ['Estreno', 'Muy pronto'],
+    ],
+    text: 'Esta es la portada del primer número. Todo lo que aparece en ella va a importar: el anillo, la ciudad, la espada y lo que mira desde arriba.',
+  },
 }
 
 export const characters: Character[] = [
   {
-    id: 'greta',
-    name: 'Greta Voltio',
-    alias: 'La electricista',
-    role: 'Líder a la fuerza',
-    bio: 'Arreglaba postes de luz hasta que uno le respondió. Desde entonces conduce 20.000 voltios y cero paciencia.',
-    quote: 'No estoy enojada. Estoy cargada.',
-    color: '#c8ff1a',
+    id: 'portador',
+    name: 'El Portador',
+    alias: 'Capa roja',
+    role: 'El que encontró la espada',
+    bio: 'No buscaba nada y encontró una espada que late. Desde entonces todos esperan que sepa qué hacer con ella.',
+    quote: 'Yo solo pasaba por aquí.',
+    color: '#ff3048',
+    image: './arte/p-portador.webp',
     stats: [
-      { label: 'Cordura', value: 34 },
-      { label: 'Peligro', value: 91 },
-      { label: 'Paciencia', value: 3 },
+      { label: 'Temple', value: 78 },
+      { label: 'Control', value: 22 },
+      { label: 'Suerte', value: 9 },
     ],
   },
   {
-    id: 'pastor',
-    name: 'Pastor Estática',
-    alias: 'El televangelista',
-    role: 'Profeta de la señal',
-    bio: 'Predicaba a las 4 a. m. para nadie. Una noche la tele lo escuchó y se quedó a vivir en su cabeza.',
-    quote: 'Hermanos, el control remoto es libre albedrío.',
-    color: '#ff2e7e',
+    id: 'albina',
+    name: 'La Albina',
+    alias: 'Pelo de ceniza',
+    role: 'La que ya estuvo arriba',
+    bio: 'Bajó de la ciudad flotante y no cuenta cómo. Sonríe poco, y cuando lo hace conviene correr.',
+    quote: 'Arriba no hay nada que quieras ver.',
+    color: '#d9e2ff',
+    image: './arte/p-albina.webp',
     stats: [
-      { label: 'Cordura', value: 8 },
-      { label: 'Carisma', value: 97 },
-      { label: 'Audiencia', value: 1 },
+      { label: 'Temple', value: 95 },
+      { label: 'Secretos', value: 100 },
+      { label: 'Paciencia', value: 12 },
     ],
   },
   {
-    id: 'mosca',
-    name: 'Mosca',
-    alias: 'El repartidor',
-    role: 'Mensajero del desastre',
-    bio: 'Entrega pedidos que nadie hizo en direcciones que no existen. Ve cuatro segundos al futuro y aun así llega tarde.',
-    quote: 'Ya sé lo que vas a decir. No, no traigo cambio.',
-    color: '#27e6ff',
+    id: 'centinela',
+    name: 'El Centinela',
+    alias: 'Cuello dorado',
+    role: 'Desertor de la guardia',
+    bio: 'Juró proteger la ciudad y rompió el juramento el mismo día. Conserva el abrigo, las cicatrices y ninguna orden que seguir.',
+    quote: 'Las órdenes venían de más arriba.',
+    color: '#f5b72e',
+    image: './arte/p-centinela.webp',
     stats: [
-      { label: 'Cordura', value: 61 },
-      { label: 'Velocidad', value: 88 },
-      { label: 'Puntualidad', value: 4 },
+      { label: 'Fuerza', value: 92 },
+      { label: 'Lealtad', value: 40 },
+      { label: 'Culpa', value: 88 },
     ],
   },
   {
-    id: 'hueso',
-    name: 'Don Hueso',
-    alias: 'El burócrata',
-    role: 'Jefe de trámites del más allá',
-    bio: 'Murió en 1987 esperando un sello. Sigue en la fila. La diferencia es que ahora él decide quién pasa.',
-    quote: 'Le falta el formulario 33-B. Por triplicado.',
-    color: '#ffb21a',
+    id: 'chicle',
+    name: 'Chicle',
+    alias: 'Interferencia',
+    role: 'Pirata de frecuencias',
+    bio: 'Escucha todo lo que la ciudad transmite y lo remezcla. Si la señal es mala, probablemente fue ella.',
+    quote: 'No lo rompí. Lo mejoré.',
+    color: '#ff5fd0',
+    image: './arte/p-chicle.webp',
     stats: [
-      { label: 'Cordura', value: 99 },
-      { label: 'Empatía', value: 0 },
-      { label: 'Sellos', value: 100 },
+      { label: 'Ingenio', value: 97 },
+      { label: 'Ruido', value: 100 },
+      { label: 'Respeto', value: 4 },
     ],
   },
   {
-    id: 'neon',
-    name: 'La Tía Neón',
-    alias: 'La vidente',
-    role: 'Oráculo de línea caliente',
-    bio: 'Lee el futuro por teléfono a 3,99 el minuto. Acierta siempre, y eso es lo que más asusta.',
-    quote: 'Veo un hombre alto en tu vida. Es el cobrador.',
-    color: '#a66bff',
+    id: 'encapuchado',
+    name: 'El Encapuchado',
+    alias: 'Sin rostro',
+    role: 'Nadie le ha visto los ojos',
+    bio: 'Habla poco y siempre sabe dónde va a abrirse el anillo. Se parece demasiado a lo que mira desde arriba.',
+    quote: 'Aún no es la hora.',
+    color: '#6f86ff',
+    image: './arte/p-encapuchado.webp',
     stats: [
-      { label: 'Cordura', value: 47 },
-      { label: 'Puntería', value: 100 },
-      { label: 'Tarifa', value: 82 },
+      { label: 'Misterio', value: 100 },
+      { label: 'Palabras', value: 6 },
+      { label: 'Confianza', value: 31 },
     ],
   },
   {
-    id: 'babas',
-    name: 'Babas',
-    alias: 'La mascota',
-    role: 'Perro. Probablemente.',
-    bio: 'Tres ojos, una lengua y ningún dueño conocido. Se comió el control remoto y ahora cambia de canal cuando eructa.',
+    id: 'clasificado',
+    name: '??????',
+    alias: 'Sin señal',
+    role: 'Sexto integrante',
+    bio: 'Este canal todavía no transmite. Quien falta en la portada llega en el número uno.',
     quote: '…',
-    color: '#ff5a2b',
+    color: '#9a94b8',
+    classified: true,
     stats: [
-      { label: 'Cordura', value: 50 },
-      { label: 'Hambre', value: 100 },
-      { label: 'Babas', value: 100 },
+      { label: 'Datos', value: 0 },
+      { label: 'Rumores', value: 73 },
+      { label: 'Ganas', value: 100 },
     ],
   },
 ]
 
 export const issues: Issue[] = [
-  { n: '01', time: '03:33', title: 'Piloto: nadie pidió esto', status: 'Muy pronto' },
-  { n: '02', time: '03:34', title: 'La teletienda del más allá', status: 'En producción' },
-  { n: '03', time: '03:35', title: 'Formulario 33-B', status: 'En producción' },
-  { n: '04', time: '03:36', title: 'Babas se come el control', status: 'En guion' },
-  { n: '05', time: '03:37', title: 'Interferencia familiar', status: 'En guion' },
-  { n: '06', time: '03:38', title: 'Fin de la transmisión (mentira)', status: 'Clasificado' },
+  { n: '01', time: '03:33', title: 'La ciudad que no cae', status: 'Muy pronto' },
+  { n: '02', time: '03:34', title: 'Seis miradas', status: 'En producción' },
+  { n: '03', time: '03:35', title: 'Espada sin dueño', status: 'En producción' },
+  { n: '04', time: '03:36', title: 'Interferencia', status: 'En guion' },
+  { n: '05', time: '03:37', title: 'Lo que vigila', status: 'En guion' },
+  { n: '06', time: '03:38', title: 'Fin de la transmisión', status: 'Clasificado' },
 ]

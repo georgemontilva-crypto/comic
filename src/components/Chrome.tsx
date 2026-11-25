@@ -135,7 +135,7 @@ export function Cursor() {
 const links = [
   ['Sinopsis', '#sinopsis'],
   ['Elenco', '#elenco'],
-  ['Adelanto', '#adelanto'],
+  ['Portada', '#portada'],
   ['Programación', '#programacion'],
 ] as const
 
